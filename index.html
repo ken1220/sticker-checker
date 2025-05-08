@@ -27,35 +27,32 @@
 <p class="lead">画像をタップして「所持⇔未所持」を切り替えてください。データは自動保存されます。</p>
 
 <div class="alert alert-info">
-所持率: <span id="rate">0%</span>(<span id="ownedCount">0</span> / <span id="totalCount">0</span>枚)
+所持率: <span id="rate">0%</span> (<span id="ownedCount">0</span> / <span id="totalCount">0</span>枚)
 </div>
 
 <div class="accordion" id="seriesAccordion"></div>
 
 <script>
-// ======== シリーズデータ ========
+// ======== シリーズデータ (シリーズ追加・枚数違いOK) ========
 const seriesList = [
-  { id: 'onepiece', name: 'ワンピースマン' },
-  { id: 'hokuto', name: '北斗のマン' }
+  { id: 'onepiece', name: 'ワンピースマン', count: 12 },
+  { id: 'hokutoman', name: '北斗のマン', count: 8 },
+  { id: 'dragonman', name: 'ドラゴンマン', count: 16 }
 ];
 
-// ======== シールデータ ========
-const stickers = [
-  // ワンピースマン
-  { id: 1, name: 'ルフィ', file: '01.jpg', series: 'onepiece' },
-  { id: 2, name: 'ゾロ', file: '02.jpg', series: 'onepiece' },
-  { id: 3, name: 'ナミ', file: '03.jpg', series: 'onepiece' },
-  { id: 4, name: 'サンジ', file: '04.jpg', series: 'onepiece' },
-  { id: 5, name: 'サンジ', file: '05.jpg', series: 'onepiece' },
-  { id: 6, name: 'サンジ', file: '06.jpg', series: 'onepiece' },
-  { id: 7, name: 'サンジ', file: '07.jpg', series: 'onepiece' },
-
-  // 北斗のマン
-  { id: 5, name: 'ケンシロウ', file: 'kenshiro.jpg', series: 'hokuto' },
-  { id: 6, name: 'ラオウ', file: 'raoh.jpg', series: 'hokuto' },
-  { id: 7, name: 'トキ', file: 'toki.jpg', series: 'hokuto' },
-  { id: 8, name: 'レイ', file: 'rei.jpg', series: 'hokuto' }
-];
+// ======== シールデータ生成 ========
+let stickers = [];
+let runningId = 1;
+seriesList.forEach(series => {
+  for (let i = 1; i <= series.count; i++) {
+    stickers.push({
+      id: runningId++,
+      name: `${series.name}${i}`,
+      file: `${String(i).padStart(2, '02')}.jpg`,
+      series: series.id
+    });
+  }
+});
 
 // ======== 保存データ読み込み ========
 let ownedSet = new Set(JSON.parse(localStorage.getItem('ownedStickers') || '[]'));
@@ -93,7 +90,7 @@ seriesList.forEach(series => {
     col.className = 'col-6 col-md-3';
 
     const img = document.createElement('img');
-    img.src = 'images/' + sticker.series + '/' + sticker.file;
+    img.src = 'images/' + series.id + '/' + sticker.file;
     img.alt = sticker.name;
     img.className = 'sticker-img mb-2';
     img.dataset.id = sticker.id;
