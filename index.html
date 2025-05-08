@@ -44,13 +44,13 @@ const stickers = [
   ...Array.from({length: 12}, (_, i) => ({
     id: i + 1,
     name: `ワンピースマン${i + 1}`,
-    file: `onepiece_${String(i + 1).padStart(2, '02')}.jpg`,
+    file: `onepiece_${String(i + 1).padStart(2, '0')}.jpg`,
     series: 'onepiece'
   })),
   ...Array.from({length: 12}, (_, i) => ({
     id: i + 13,
     name: `北斗のマン${i + 1}`,
-    file: `hokuto_${String(i + 1).padStart(2, '02')}.jpg`,
+    file: `hokuto_${String(i + 1).padStart(2, '0')}.jpg`,
     series: 'hokuto'
   }))
 ];
