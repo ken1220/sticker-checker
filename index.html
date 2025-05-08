@@ -27,7 +27,7 @@
 <p class="lead">画像をタップして「所持⇔未所持」を切り替えてください。データは自動保存されます。</p>
 
 <div class="alert alert-info">
-所持率: <span id="rate">0%</span> (<span id="ownedCount">0</span> / <span id="totalCount">0</span>枚)
+所持率: <span id="rate">0%</span>(<span id="ownedCount">0</span> / <span id="totalCount">0</span>枚)
 </div>
 
 <div class="accordion" id="seriesAccordion"></div>
@@ -39,20 +39,19 @@ const seriesList = [
   { id: 'hokuto', name: '北斗のマン' }
 ];
 
-// ======== シールデータ (各12枚) ========
+// ======== シールデータ ========
 const stickers = [
-  ...Array.from({length: 12}, (_, i) => ({
-    id: i + 1,
-    name: `ワンピースマン${i + 1}`,
-    file: `onepiece_${String(i + 1).padStart(2, '0')}.jpg`,
-    series: 'onepiece'
-  })),
-  ...Array.from({length: 12}, (_, i) => ({
-    id: i + 13,
-    name: `北斗のマン${i + 1}`,
-    file: `hokuto_${String(i + 1).padStart(2, '0')}.jpg`,
-    series: 'hokuto'
-  }))
+  // ワンピースマン
+  { id: 1, name: 'ルフィ', file: '01', series: 'onepiece' },
+  { id: 2, name: 'ゾロ', file: '02.jpg', series: 'onepiece' },
+  { id: 3, name: 'ナミ', file: '03.jpg', series: 'onepiece' },
+  { id: 4, name: 'サンジ', file: '04.jpg', series: 'onepiece' },
+
+  // 北斗のマン
+  { id: 5, name: 'ケンシロウ', file: 'kenshiro.jpg', series: 'hokuto' },
+  { id: 6, name: 'ラオウ', file: 'raoh.jpg', series: 'hokuto' },
+  { id: 7, name: 'トキ', file: 'toki.jpg', series: 'hokuto' },
+  { id: 8, name: 'レイ', file: 'rei.jpg', series: 'hokuto' }
 ];
 
 // ======== 保存データ読み込み ========
@@ -91,7 +90,7 @@ seriesList.forEach(series => {
     col.className = 'col-6 col-md-3';
 
     const img = document.createElement('img');
-　　 img.src = 'images/' + sticker.series + '/' + sticker.file;
+    img.src = 'images/' + sticker.series + '/' + sticker.file;
     img.alt = sticker.name;
     img.className = 'sticker-img mb-2';
     img.dataset.id = sticker.id;
