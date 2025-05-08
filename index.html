@@ -7,26 +7,30 @@
 <style>
 .sticker-img {
   width: 100%;
-  max-width: 100px;
-  height: auto;
-  border: 2px solid transparent;
-  border-radius: 5px;
+  aspect-ratio: 1 / 1;
+  object-fit: cover;
+  border: 2px solid #ddd;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
   cursor: pointer;
-  transition: filter 0.3s, opacity 0.3s;
+  transition: transform 0.2s, filter 0.3s, opacity 0.3s;
 }
 .sticker-img.gray {
   filter: grayscale(100%);
-  opacity: 0.6;
+  opacity: 0.5;
+}
+.sticker-img:hover {
+  transform: scale(1.05);
 }
 .complete-badge {
   font-weight: bold;
 }
 </style>
 </head>
-<body class="container py-4">
+<body class="container py-3">
 
-<h1 class="mb-3">ビックリマンシール 所持率チェッカー</h1>
-<p class="lead">画像をタップして「所持⇔未所持」を切り替えてください。データは自動保存されます。</p>
+<h1 class="mb-3 fs-4 text-center">ビックリマンシール 所持率チェッカー</h1>
+<p class="lead fs-6 text-center mb-4">画像をタップして「所持⇔未所持」を切り替えてください。データは自動保存されます。</p>
 
 <div class="accordion" id="seriesAccordion"></div>
 
@@ -74,7 +78,7 @@ seriesList.forEach(series => {
     </h2>
     <div id="${collapseId}" class="accordion-collapse collapse" aria-labelledby="${headerId}" data-bs-parent="#seriesAccordion">
       <div class="accordion-body">
-        <div class="row row-cols-2 row-cols-sm-3 row-cols-md-4 g-2" id="area-${series.id}"></div>
+        <div class="row row-cols-4 g-2" id="area-${series.id}"></div>
       </div>
     </div>
   `;
@@ -90,7 +94,7 @@ seriesList.forEach(series => {
     const img = document.createElement('img');
     img.src = 'images/' + sticker.file;
     img.alt = sticker.name;
-    img.className = 'sticker-img mb-2';
+    img.className = 'sticker-img';
     img.dataset.id = sticker.id;
     if (!ownedSet.has(sticker.id)) {
       img.classList.add('gray');
