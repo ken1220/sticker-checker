@@ -2,14 +2,11 @@
 <html lang="ja">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
 <title>ビックリマン所持率チェッカー</title>
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 <style>
 .sticker-img {
   width: 100%;
-  aspect-ratio: 1 / 1;
-  object-fit: cover;
   border: 2px solid transparent;
   border-radius: 5px;
   cursor: pointer;
@@ -22,55 +19,29 @@
 .complete-badge {
   font-weight: bold;
 }
-
-/* 画面サイズに関係なく常に4列表示 */
-@media (max-width: 576px) {
-  .col-6 {
-    flex: 0 0 auto;
-    width: 25%; /* 4列表示 */
-  }
-}
-@media (min-width: 577px) and (max-width: 768px) {
-  .col-6 {
-    flex: 0 0 auto;
-    width: 25%; /* 4列表示 */
-  }
-}
-@media (min-width: 769px) {
-  .col-6 {
-    flex: 0 0 auto;
-    width: 25%; /* 4列表示 */
-  }
-}
 </style>
 </head>
-
 <body class="container py-4">
 
 <h1 class="mb-3">ビックリマンシール 所持率チェッカー</h1>
 <p class="lead">画像をタップして「所持⇔未所持」を切り替えてください。データは自動保存されます。</p>
 
-<div class="alert alert-info">
-所持率: <span id="rate">0%</span> (<span id="ownedCount">0</span> / <span id="totalCount">0</span>枚)
-</div>
-
 <div class="accordion" id="seriesAccordion"></div>
 
 <script>
-// ======== シリーズデータ (シリーズ追加・枚数違いOK) ========
+// ======== シリーズデータ (シリーズごとに枚数違うパターン) ========
 const seriesList = [
   { id: 'onepiece', name: 'ワンピースマン', count: 12 },
-  { id: 'hokutoman', name: '北斗のマン', count: 8 },
-  { id: 'dragonman', name: 'ドラゴンマン', count: 16 }
+  { id: 'hokuto', name: '北斗のマン', count: 8 },
+  { id: 'dragonball', name: 'ドラゴンボールマン', count: 16 } // 例: 追加シリーズ
 ];
 
-// ======== シールデータ生成 ========
-let stickers = [];
-let runningId = 1;
+// ======== シールデータ ========
+const stickers = [];
 seriesList.forEach(series => {
   for (let i = 1; i <= series.count; i++) {
     stickers.push({
-      id: runningId++,
+      id: `${series.id}_${String(i).padStart(2, '02')}`,
       name: `${series.name}${i}`,
       file: `${String(i).padStart(2, '02')}.jpg`,
       series: series.id
@@ -95,12 +66,13 @@ seriesList.forEach(series => {
       <button class="accordion-button collapsed d-flex justify-content-between align-items-center" type="button" data-bs-toggle="collapse" data-bs-target="#${collapseId}" aria-expanded="false" aria-controls="${collapseId}">
         <span class="me-auto">${series.name}</span>
         <span class="series-rate badge bg-primary me-2">0%</span>
+        <span class="series-rate-details small text-muted me-2">(0/0)</span>
         <span class="complete-badge badge bg-success d-none">COMPLETE!</span>
       </button>
     </h2>
     <div id="${collapseId}" class="accordion-collapse collapse" aria-labelledby="${headerId}" data-bs-parent="#seriesAccordion">
       <div class="accordion-body">
-        <div class="row g-2" id="area-${series.id}"></div>
+        <div class="row row-cols-4 g-2" id="area-${series.id}"></div>
       </div>
     </div>
   `;
@@ -111,10 +83,10 @@ seriesList.forEach(series => {
   const seriesStickers = stickers.filter(s => s.series === series.id);
   seriesStickers.forEach(sticker => {
     const col = document.createElement('div');
-    col.className = 'col-6 col-md-3';
+    col.className = 'col';
 
     const img = document.createElement('img');
-    img.src = 'images/' + series.id + '/' + sticker.file;
+    img.src = `images/${series.id}/${sticker.file}`;
     img.alt = sticker.name;
     img.className = 'sticker-img mb-2';
     img.dataset.id = sticker.id;
@@ -128,7 +100,6 @@ seriesList.forEach(series => {
   });
 });
 
-document.getElementById('totalCount').textContent = stickers.length;
 updateAllRates();
 
 // ======== 切替 & 保存 ========
@@ -149,30 +120,28 @@ function saveData() {
 }
 
 function updateAllRates() {
-  // 全体
-  const owned = ownedSet.size;
-  const total = stickers.length;
-  const percent = ((owned / total) * 100).toFixed(1);
-  document.getElementById('ownedCount').textContent = owned;
-  document.getElementById('rate').textContent = percent + '%';
-
-  // シリーズごと
   seriesList.forEach(series => {
     const seriesStickers = stickers.filter(s => s.series === series.id);
     const seriesCount = seriesStickers.length;
     const seriesOwned = seriesStickers.filter(s => ownedSet.has(s.id)).length;
-    const rate = ((seriesOwned / seriesCount) * 100).toFixed(1);
+    const rate = seriesCount === 0 ? 0 : ((seriesOwned / seriesCount) * 100).toFixed(1);
 
     const accordionItem = document.getElementById(`accordion-item-${series.id}`);
     const rateLabel = accordionItem.querySelector('.series-rate');
+    const detailsLabel = accordionItem.querySelector('.series-rate-details');
     const completeBadge = accordionItem.querySelector('.complete-badge');
 
     rateLabel.textContent = rate + '%';
+    detailsLabel.textContent = `(${seriesOwned} / ${seriesCount}枚)`;
 
-    if (seriesOwned === seriesCount) {
+    if (seriesOwned === seriesCount && seriesCount > 0) {
       completeBadge.classList.remove('d-none');
+      rateLabel.classList.remove('bg-primary');
+      rateLabel.classList.add('bg-success');
     } else {
       completeBadge.classList.add('d-none');
+      rateLabel.classList.remove('bg-success');
+      rateLabel.classList.add('bg-primary');
     }
   });
 }
