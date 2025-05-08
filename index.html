@@ -7,6 +7,8 @@
 <style>
 .sticker-img {
   width: 100%;
+  max-width: 100px;
+  height: auto;
   border: 2px solid transparent;
   border-radius: 5px;
   cursor: pointer;
@@ -29,23 +31,24 @@
 <div class="accordion" id="seriesAccordion"></div>
 
 <script>
-// ======== シリーズデータ (シリーズごとに枚数違うパターン) ========
+// ======== シリーズデータ ========
 const seriesList = [
   { id: 'onepiece', name: 'ワンピースマン', count: 12 },
-  { id: 'hokuto', name: '北斗のマン', count: 8 },
-  { id: 'dragonball', name: 'ドラゴンボールマン', count: 16 } // 例: 追加シリーズ
+  { id: 'hokuto', name: '北斗のマン', count: 8 }
 ];
 
 // ======== シールデータ ========
-const stickers = [];
+let stickers = [];
+let currentId = 1;
 seriesList.forEach(series => {
   for (let i = 1; i <= series.count; i++) {
     stickers.push({
-      id: `${series.id}_${String(i).padStart(2, '02')}`,
-      name: `${series.name}${i}`,
-      file: `${String(i).padStart(2, '02')}.jpg`,
+      id: currentId,
+      name: `${series.name} ${i}`,
+      file: `${series.id}/${String(i).padStart(2, '02')}.jpg`,
       series: series.id
     });
+    currentId++;
   }
 });
 
@@ -66,13 +69,12 @@ seriesList.forEach(series => {
       <button class="accordion-button collapsed d-flex justify-content-between align-items-center" type="button" data-bs-toggle="collapse" data-bs-target="#${collapseId}" aria-expanded="false" aria-controls="${collapseId}">
         <span class="me-auto">${series.name}</span>
         <span class="series-rate badge bg-primary me-2">0%</span>
-        <span class="series-rate-details small text-muted me-2">(0/0)</span>
         <span class="complete-badge badge bg-success d-none">COMPLETE!</span>
       </button>
     </h2>
     <div id="${collapseId}" class="accordion-collapse collapse" aria-labelledby="${headerId}" data-bs-parent="#seriesAccordion">
       <div class="accordion-body">
-        <div class="row row-cols-4 g-2" id="area-${series.id}"></div>
+        <div class="row row-cols-2 row-cols-sm-3 row-cols-md-4 g-2" id="area-${series.id}"></div>
       </div>
     </div>
   `;
@@ -86,7 +88,7 @@ seriesList.forEach(series => {
     col.className = 'col';
 
     const img = document.createElement('img');
-    img.src = `images/${series.id}/${sticker.file}`;
+    img.src = 'images/' + sticker.file;
     img.alt = sticker.name;
     img.className = 'sticker-img mb-2';
     img.dataset.id = sticker.id;
@@ -124,24 +126,18 @@ function updateAllRates() {
     const seriesStickers = stickers.filter(s => s.series === series.id);
     const seriesCount = seriesStickers.length;
     const seriesOwned = seriesStickers.filter(s => ownedSet.has(s.id)).length;
-    const rate = seriesCount === 0 ? 0 : ((seriesOwned / seriesCount) * 100).toFixed(1);
+    const rate = ((seriesOwned / seriesCount) * 100).toFixed(1);
 
     const accordionItem = document.getElementById(`accordion-item-${series.id}`);
     const rateLabel = accordionItem.querySelector('.series-rate');
-    const detailsLabel = accordionItem.querySelector('.series-rate-details');
     const completeBadge = accordionItem.querySelector('.complete-badge');
 
-    rateLabel.textContent = rate + '%';
-    detailsLabel.textContent = `(${seriesOwned} / ${seriesCount}枚)`;
+    rateLabel.textContent = `${rate}% (${seriesOwned} / ${seriesCount}枚)`;
 
     if (seriesOwned === seriesCount && seriesCount > 0) {
       completeBadge.classList.remove('d-none');
-      rateLabel.classList.remove('bg-primary');
-      rateLabel.classList.add('bg-success');
     } else {
       completeBadge.classList.add('d-none');
-      rateLabel.classList.remove('bg-success');
-      rateLabel.classList.add('bg-primary');
     }
   });
 }
