@@ -26,16 +26,12 @@ p.lead {
 }
 
 .accordion-button {
-  font-size: 1.15rem;
+  font-size: 2.4rem;
   padding: 0.85rem 1.25rem;
 }
 
 .accordion-button .series-rate {
-  font-size: 1rem;
-}
-
-.accordion-button .complete-badge {
-  font-size: 0.95rem;
+  font-size: 2.4rem;
 }
 
 .accordion-body {
@@ -60,7 +56,6 @@ p.lead {
 .sticker-grid .col {
   padding: 6px;
 }
-
 </style>
 </head>
 <body class="container-fluid">
@@ -103,10 +98,9 @@ seriesList.forEach(series => {
 
   item.innerHTML = `
     <h2 class="accordion-header" id="${headerId}">
-      <button class="accordion-button collapsed d-flex justify-content-between align-items-center" type="button" data-bs-toggle="collapse" data-bs-target="#${collapseId}" aria-expanded="false" aria-controls="${collapseId}">
-        <span class="me-auto">${series.name}</span>
-        <span class="series-rate badge bg-primary me-2">0%</span>
-        <span class="complete-badge badge bg-success d-none">COMPLETE!</span>
+      <button class="accordion-button collapsed d-flex align-items-center" type="button" data-bs-toggle="collapse" data-bs-target="#${collapseId}" aria-expanded="false" aria-controls="${collapseId}">
+        <span>${series.name}</span>
+        <span class="series-rate badge bg-primary ms-auto">0%</span>
       </button>
     </h2>
     <div id="${collapseId}" class="accordion-collapse collapse" aria-labelledby="${headerId}" data-bs-parent="#seriesAccordion">
@@ -165,14 +159,8 @@ function updateAllRates() {
 
     const accordionItem = document.getElementById(`accordion-item-${series.id}`);
     const rateLabel = accordionItem.querySelector('.series-rate');
-    const completeBadge = accordionItem.querySelector('.complete-badge');
 
     rateLabel.textContent = rate + '%';
-    if (seriesOwned === seriesCount) {
-      completeBadge.classList.remove('d-none');
-    } else {
-      completeBadge.classList.add('d-none');
-    }
   });
 }
 </script>
