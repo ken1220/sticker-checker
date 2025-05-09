@@ -89,7 +89,7 @@ const stickers = seriesList.flatMap(series =>
   Array.from({length: series.count}, (_, i) => ({
     id: stickerId++,
     name: `${series.name}${i + 1}`,
-    file: `${series.id}/${String(i + 1).padStart(2, '02')}.jpg`,
+    file: `${series.id}/${String(i + 1).padStart(2, '0')}.jpg`,
     series: series.id
   }))
 );
